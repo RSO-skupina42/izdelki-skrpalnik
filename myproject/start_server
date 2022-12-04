@@ -1,0 +1,12 @@
+#!/bin/bash
+
+uvicorn api:app \
+    --app-dir /myproject/myproject \
+    --host 0.0.0.0 \
+    --no-server-header \
+    --port 8323
+
+#    --reload
+#    --proxy-headers \
+#    --forwarded-allow-ips "*" \
+    # --log-config /src/EssayCommaHelper/uvicorn_log_config.ini \

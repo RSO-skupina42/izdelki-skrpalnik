@@ -1,0 +1,6 @@
+venv
+data
+/create_k8s_credentials.sh
+.idea
+myproject/build/
+myproject/project.egg-info/

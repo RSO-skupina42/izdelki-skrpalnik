@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scrapy-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scrapy
+  template:
+    metadata:
+      labels:
+        app: scrapy
+    spec:
+      containers:
+        - image: timopetric/izdelki-skrpalnik
+          name: scrapy
+          env:
+            - name: DB_HOSTNAME
+              valueFrom:
+                secretKeyRef:
+                  key: db_hostname
+                  name: db-credentials-izdelki-skrpalnik
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: db_username
+                  name: db-credentials-izdelki-skrpalnik
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: db_password
+                  name: db-credentials-izdelki-skrpalnik
+            - name: DB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  key: db_database
+                  name: db-credentials-izdelki-skrpalnik
+          ports:
+            - containerPort: 8323
+              name: server
+              protocol: TCP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: scrapy
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 8323
+      protocol: TCP
+      targetPort: server
+  selector:
+    app: scrapy
