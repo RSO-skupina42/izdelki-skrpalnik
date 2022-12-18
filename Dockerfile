@@ -63,6 +63,8 @@ COPY myproject /myproject
 
 WORKDIR /myproject
 
+RUN chmod +x start_server
+
 #EXPOSE 6800
 EXPOSE 8323
 
