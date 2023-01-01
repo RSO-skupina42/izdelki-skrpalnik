@@ -33,7 +33,7 @@ jobs:
           format: YYYY-MM-DD-HH-mm-ss
           utcOffset: "+02:00"
 
-      - name: Build and push with date and latest
+      - name: Build and push with datestamp and latest
         uses: docker/build-push-action@v2
         with:
           file: ./Dockerfile

@@ -1,21 +1,28 @@
 from fastapi import FastAPI, Response, Request, Depends, Query
 from fastapi_database import get_db, Database
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from typing import List
 from typing import Union
+from run_spider_process import execute
 
 
 class Product(BaseModel):
+    id: str = None
+    store_elem_id: Union[str, None] = None
+    store_name: Union[str, None] = None
     title: Union[str, None] = None
     description: Union[str, None] = None
-    price: Union[str, None] = None
-    # description: Union[str, None] = None
-    # description: Union[str, None] = None
+    category: Union[str, None] = None
+    sales_unit: Union[str, None] = None
+    item_size: Union[str, None] = None
+    price: Union[float, None] = None
+    url: Union[str, None] = None
 
 
 class Descriptor(BaseModel):
     fields: str
-    table: str
+    # table: str
     limit: int
     offset: int
 
@@ -26,24 +33,54 @@ class ResponseProducts(BaseModel):
     message: str
 
 
-app = FastAPI(title="Izdelki skrpalnik", description="Api za pridobivanje podatkov o izdelkih iz strani spletnih trgovin.")
+app = FastAPI(
+    title="Izdelki skrpalnik",
+    description="Api za pridobivanje podatkov o izdelkih iz strani spletnih trgovin.",
+    openapi_url="/scrapy/openapi.json",
+)
 
 
-@app.on_event("shutdown")
-def shutdown_event(db: Database = Depends(get_db)):
-    db.disconnect_db()
+@app.get("/demo/fill-store-data")
+async def fill_store_database():
+    return StreamingResponse(execute(["scrapy", "crawl", "myspider"]), media_type="text/plain")
 
 
 @app.get("/products", response_model=ResponseProducts, description="Vrne izdelke iz trgovine.")
 async def predict_eh(request: Request,
                      response: Response,
+                     store_elem_id: Union[str, None]=None,
+                     store_name: Union[str, None]=None,
+                     title: Union[str, None]=None,
+                     description: Union[str, None]=None,
+                     category: Union[str, None]=None,
+                     item_size: Union[str, None]=None,
+                     price: Union[str, None]=None,
                      db: Database = Depends(get_db),
-                     fields="title,description,price",
-                     table="spar",
+                     fields="id,store_elem_id,store_name,title,description,category,sales_unit,item_size,price,url",
+                     # store_name="spar",
                      limit=10,
                      offset=0):
 
-    query = f"SELECT {fields} FROM {table} LIMIT {limit} OFFSET {offset}"
+    # TODO: add filtering based on store_name
+    # if store_elem_id is None: store_elem_id = "store_elem_id"
+
+    query = f"SELECT {fields} FROM stores"
+    columns = [(store_elem_id, "store_elem_id"),
+               (store_name, "store_name"),
+               (title, "title"),
+               (description, "description"),
+               (category, "category"),
+               (item_size, "item_size"),
+               (price, "price")]
+    if any([c for c, n in columns]):
+        query += f" WHERE"
+
+    for column, name in columns:
+        if column is not None:
+            query += f" {name} LIKE '%{column}%' AND"
+    if query[-4:] == " AND":
+        query = query[:-4]
+    query += f" LIMIT {limit} OFFSET {offset}"
     print(query)
 
     test_table = db.get_table(query)
@@ -52,7 +89,7 @@ async def predict_eh(request: Request,
         data = [Product(**{key: p[i] for i, key in enumerate(fields.split(","))}) for p in test_table]
         desc = {
                 "fields": fields,
-                "table": table,
+                # "table": table,
                 "limit": limit,
                 "offset": offset,
             }

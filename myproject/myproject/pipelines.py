@@ -28,38 +28,47 @@ class PostgresDemoPipeline(object):
         self.cur = self.connection.cursor()
 
         ## Create quotes table if none exists
-        self.cur.execute("DROP TABLE spar")
+        self.cur.execute("DROP TABLE stores")
         self.cur.execute("""
-        CREATE TABLE IF NOT EXISTS spar(
+        CREATE TABLE IF NOT EXISTS stores(
             id serial PRIMARY KEY, 
-            elem_id text,
+            store_elem_id text, 
+            store_name text,
             title text,
             description text,
-            size text,
+            category text,
             price text,
+            item_size text,
+            sales_unit text,
             url text
         )
         """)
-
+        self.init_and_fill_demo_data_tus()
         self.temporary_db = []
+
+    def init_and_fill_demo_data_tus(self):
+        # TODO: create table if not exist and fill some dummy product data
+        pass
 
     def process_item(self, item, spider):
         self.temporary_db.append((
-            item["elem_id"],
+            item["store_elem_id"],
+            item["store_name"],
             item["title"],
             item["description"],
-            item["size"],
+            item["category"],
+            item["sales_unit"],
+            item["item_size"],
             item["price"],
             item["url"],
         ))
         return item
 
     def close_spider(self, spider):
-        args_str = b','.join(self.cur.mogrify("(%s,%s,%s,%s,%s,%s)", x) for x in self.temporary_db)
+        args_str = b','.join(self.cur.mogrify("(%s,%s,%s,%s,%s,%s,%s,%s,%s)", x) for x in self.temporary_db)
         # print(args_str)
-        self.cur.execute(b"INSERT INTO spar (elem_id, title, description, size, price, url) VALUES " + args_str)
+        self.cur.execute(b"INSERT INTO stores (store_elem_id, store_name, title, description, category, sales_unit, item_size, price, url) VALUES " + args_str)
         self.connection.commit()
-
         ## Close cursor & connection to database
         self.cur.close()
         self.connection.close()

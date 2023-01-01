@@ -90,7 +90,7 @@ class MyspiderSpider(scrapy.Spider):
 
         elem_id = data["id"]
         title = data["masterValues"].get("title", "").strip()
-        price = data["masterValues"].get("best-price", "").strip()
+        price = data["masterValues"].get("best-price", "")
         sales_unit = data["masterValues"].get("sales-unit", "").strip()
 
         short_description = data["masterValues"].get("short-description")
@@ -98,20 +98,20 @@ class MyspiderSpider(scrapy.Spider):
         description = data["masterValues"].get("description", "").strip()
         desc = short_description.strip() + " " + description.strip()
 
-        categories = data["masterValues"].get("category-name", "").strip()
+        categories = data["masterValues"].get("category-name", "None").strip()
         url_elem = url_link_elem.format(elem=data["masterValues"].get("url", "").strip())
 
         rez_size, rez_unit = extract_size(title)
         size = f"{rez_size} {rez_unit}"
 
-        loader.add_value("elem_id", elem_id)
+        loader.add_value("store_elem_id", elem_id)
+        loader.add_value("store_name", "spar")
         loader.add_value("title", title)
-        loader.add_value("price", price)
-        loader.add_value("sales_unit", sales_unit)
-        # loader.add_value("short_description", short_description)
         loader.add_value("description", desc)
         loader.add_value("category", categories)
+        loader.add_value("sales_unit", sales_unit)
+        loader.add_value("item_size", size)
+        loader.add_value("price", price)
         loader.add_value("url", url_elem)
-        loader.add_value("size", size)
 
         return loader.load_item()
