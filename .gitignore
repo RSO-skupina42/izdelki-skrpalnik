@@ -5,3 +5,4 @@ data
 myproject/build/
 myproject/project.egg-info/
 /docker_run.sh
+*.pyc

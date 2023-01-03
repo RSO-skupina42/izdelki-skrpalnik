@@ -7,6 +7,21 @@ from typing import List
 from typing import Union
 from run_spider_process import execute
 
+import sentry_sdk
+from sentry_sdk import set_level
+from config import *
+
+# enable logging
+sentry_sdk.init(
+    dsn=conf_sentry_dsn,
+    traces_sample_rate=conf_sentry_traces_sample_rate,
+    debug=conf_sentry_debug,
+    server_name=conf_sentry_server_name,
+    release=conf_sentry_release,
+    environment=conf_sentry_environment,
+)
+set_level("info")
+
 
 class Product(BaseModel):
     id: str = None
@@ -35,7 +50,7 @@ class ResponseProducts(BaseModel):
 
 
 app = FastAPI(
-    title="Izdelki skrpalnik",
+    title="Skrpalnik izdelkov",
     description="Api za pridobivanje podatkov o izdelkih iz strani spletnih trgovin.",
     root_path="/scrapy",
     docs_url="/openapi",
