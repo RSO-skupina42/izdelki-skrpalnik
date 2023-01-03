@@ -43,12 +43,45 @@ class PostgresDemoPipeline(object):
             url text
         )
         """)
-        self.init_and_fill_demo_data_tus()
         self.temporary_db = []
+        self.demo_fill_data_tus()
 
-    def init_and_fill_demo_data_tus(self):
-        # TODO: create table if not exist and fill some dummy product data
-        pass
+    def demo_fill_data_tus(self):
+        # fill some dummy tus product data
+        demo_tus_data = [
+            ("8025332000018",
+             "tus",
+             "Češnjev paradižnik v grozdih",
+             "Češnjev paradižnik v grozdih, pakirano, 500 g",
+             "Sadje in zelenjava",
+             "g",
+             "500",
+             "1.79",
+             "https://www.tus.si/izdelki/cesnjev-paradiznik-v-grozdih-pakirano-500-g/"),
+            ("3831001818632",
+             "tus",
+             "Testenine, polži, amorosi št. 32",
+             "Testenine, polži, amorosi št. 32, 500 g",
+             "Osnovna živila",
+             "g",
+             "500",
+             "1.29",
+             "https://www.tus.si/izdelki/testenine-polzi-amorosi-st-32-500-g/"),
+            ("3838800024967",
+             "tus",
+             "Alpsko mleko, pol posneto, 1.5 % m.m.",
+             "Alpsko mleko, pol posneto, 1.5 % m.m., 1 l",
+             "category",
+             "l",
+             "1",
+             "1.09",
+             "https://www.tus.si/izdelki/alpsko-mleko-pol-posneto-1-5-m-m-1-l/"),
+        ]
+        self.temporary_db += demo_tus_data
+        # args_str = b','.join(self.cur.mogrify("(%s,%s,%s,%s,%s,%s,%s,%s,%s)", x) for x in demo_tus_data)
+        # # print(args_str)
+        # self.cur.execute(b"INSERT INTO stores (store_elem_id, store_name, title, description, category, sales_unit, item_size, price, url) VALUES " + args_str)
+        # self.connection.commit()
 
     def process_item(self, item, spider):
         self.temporary_db.append((
