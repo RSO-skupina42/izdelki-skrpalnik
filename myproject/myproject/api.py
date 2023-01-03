@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Response, Request, Depends, Query
 from fastapi_database import get_db, Database
 from fastapi.responses import StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
 from typing import Union
@@ -40,6 +41,16 @@ app = FastAPI(
     docs_url="/openapi",
 )
 
+origins = [
+    ""
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=[""],
+    allow_headers=["*"],
+)
 
 @app.get("/demo/fill-store-data", description="V bazo naloži sveže podatke o izdelkih iz trgovin.")
 async def fill_store_database():
