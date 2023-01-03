@@ -36,7 +36,8 @@ class ResponseProducts(BaseModel):
 app = FastAPI(
     title="Izdelki skrpalnik",
     description="Api za pridobivanje podatkov o izdelkih iz strani spletnih trgovin.",
-    openapi_url="/scrapy/openapi.json",
+    root_path="/scrapy",
+    docs_url="/openapi",
 )
 
 
