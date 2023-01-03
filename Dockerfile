@@ -65,9 +65,7 @@ WORKDIR /myproject
 
 RUN chmod +x start_server
 
-#EXPOSE 6800
 EXPOSE 8323
 
 CMD /myproject/start_server
-#ENTRYPOINT ["tini", "--"]
 #CMD ["scrapyd", "--pidfile="]
