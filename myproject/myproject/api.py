@@ -41,13 +41,13 @@ app = FastAPI(
 )
 
 
-@app.get("/demo/fill-store-data")
+@app.get("/demo/fill-store-data", description="V bazo naloži sveže podatke o izdelkih iz trgovin.")
 async def fill_store_database():
     return StreamingResponse(execute(["scrapy", "crawl", "myspider"]), media_type="text/plain")
 
 
-@app.get("/products", response_model=ResponseProducts, description="Vrne izdelke iz trgovine.")
-async def predict_eh(request: Request,
+@app.get("/products", response_model=ResponseProducts, description="Vrne iskane filtrirane izdelke iz trgovin.")
+async def get_products(request: Request,
                      response: Response,
                      store_elem_id: Union[str, None]=None,
                      store_name: Union[str, None]=None,
