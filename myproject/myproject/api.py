@@ -78,7 +78,7 @@ async def predict_eh(request: Request,
 
     for column, name in columns:
         if column is not None:
-            query += f" {name} LIKE '%{column}%' AND"
+            query += f" LOWER({name}) LIKE LOWER('%{column}%') AND"
     if query[-4:] == " AND":
         query = query[:-4]
     query += f" LIMIT {limit} OFFSET {offset}"
