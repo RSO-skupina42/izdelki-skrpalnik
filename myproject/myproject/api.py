@@ -56,17 +56,6 @@ app = FastAPI(
     docs_url="/openapi",
 )
 
-origins = [
-    ""
-]
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 @app.get("/demo/fill-store-data", description="V bazo naloži sveže podatke o izdelkih iz trgovin.")
 async def fill_store_database():
     return StreamingResponse(execute(["scrapy", "crawl", "myspider"]), media_type="text/plain")
@@ -129,3 +118,16 @@ async def get_products(request: Request,
         "desc": desc,
         "message": msg,
     }
+
+
+origins = [
+    "*"
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
